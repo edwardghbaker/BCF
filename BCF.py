@@ -10,6 +10,9 @@ import xml.etree.cElementTree as et
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import PIL.Image as Image 
+from scipy.ndimage import zoom
+
+#scipy.ndimage.zoom(x, 2, order=1)
 
 
 
@@ -61,10 +64,11 @@ class BCFstitch():
         self.directory = directory
         self.images = [images(i,elements=['Fe','Mg','Si']) for i in files]
         #need to make a list of filenames 
-        self.getListOfResolutions(self)
-        self.resampleImages(self)
+        self.resolutions = BCFstitch.getListOfResolutions(self)
+        BCFstitch.resampleImages(self)
+        BCFstitch.makeBlankArea(self)
+        BCFstitch.addImagesToBlank(self)
 
-        
     def getListOfResolutions(self):
         resolutions = [images(i).x_res for i in self.files]
         self.resolutions = resolutions
@@ -74,34 +78,36 @@ class BCFstitch():
     def resampleImages(self):
         images = self.images
         max_res = self.max_res
-        for i in images:
-            i.data = i.data.rebin(scale=(i.x_res/max_res,i.y_res/max_res,1))
-        self.images = images
+        for i in tqdm(images):
+            i.data = zoom(i.data,max_res/i.x_res,order=1)
+        self.images_same_res = images
 
-    def makeStitch(self):
-        images = self.images
-        max_res = self.max_res
-        nX = max([i.nX for i in images])
-        nY = max([i.nY for i in images])
-        x = max([i.x for i in images])
-        y = max([i.y for i in images])
-        z = max([i.z for i in images])
-        nZ = len(images[0].elements)
-        data = np.zeros((nX,nY,nZ))
-        for i in images:
-            data[i.x:i.x+i.nX,i.y:i.y+i.nY,:] = i.data
-        return hs.signals.Signal2D(data)
+    def makeBlankArea(self):
+        images = self.images_same_res
+        x = [i.x for i in images]
+        y = [i.y for i in images]
+        self.x_min = min(x)
+        self.x_max = max(x)
+        self.y_min = min(y)
+        self.y_max = max(y)
+        x_range = max(x) - max(x)
+        y_range = max(y) - min(y)
+        x_res = images[0].x_res
+        y_res = images[0].y_res
+        nX = int(x_range/x_res)
+        nY = int(y_range/y_res)
+        blank = np.zeros((nY,nX))
+        self.blank = blank
 
-#    def loadImages()
-        # call image class to get list of dicts?
-        # define highest res and the dimensions of the map
-        
-#    def resampleImages():
-        #take image from list and convert to new image with correct resolution 
-        
-#    def makeStitch():
-        #run functions for each element and save png of image with blank as backspace
-    
+    def addImagesToBlank(self):
+        images = self.images_same_res
+        blank = self.blank
+        for i in tqdm(images):
+            x = int((i.x - self.x_min)/i.x_res)
+            y = int((i.y - self.y_min)/i.y_res)
+            blank[y:y+i.nY,x:x+i.nX] = i.data[:,:,0]
+        self.composit = blank
+
 
 
 
@@ -120,6 +126,5 @@ MAC_fe = MAC.parseAndSlice('Fe')
 
 
 stitch = BCFstitch(MAC_directory)
-stitch.makeStitch().plot()
 
 # %%
