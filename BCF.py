@@ -12,18 +12,12 @@ from tqdm import tqdm
 import PIL.Image as Image 
 from scipy.ndimage import zoom
 
-#scipy.ndimage.zoom(x, 2, order=1)
-
-
-
-
 #%% 
 
 class util():
     
     def energyKa(ele):
         return hs.material.elements[ele].Atomic_properties.Xray_lines['Ka']['energy (keV)']
-
 
 class images():
 
@@ -46,6 +40,7 @@ class images():
         
         self.elements = elements
         self.channels = {i: header.get_spectra_metadata().energy_to_channel(util.energyKa(i)) for i in elements}
+        breakpoint()
 
     def parseAndSlice(self,element):
         return self.data[:,:,self.channels[element]]
@@ -54,7 +49,6 @@ class images():
         elements = self.elements
         maps = [plt.imshow(self.parseAndSlice(i).compute()) for i in elements]
         self.maps = {elements[i]: maps[i] for i in range(len(elements))}
-    
     
 class BCFstitch():
 
@@ -108,22 +102,14 @@ class BCFstitch():
             blank[y:y+i.nY,x:x+i.nX] = i.data[:,:,0]
         self.composit = blank
 
-
-
-
 #%%
 
-
-
 MAC_filename = r'C:\Users\User\OneDrive - The University of Manchester\meteoriteData\Meteorites\MAC 88136\MAC88136_position4_001.bcf'
-
 MAC_filename = r"C:\Users\User\OneDrive - The University of Manchester\meteoriteData\Meteorites\MAC 88136\MAC88136_position4_001.bcf"
-
 MAC_directory = r"C:\Users\User\OneDrive - The University of Manchester\meteoriteData\Meteorites\MAC 88136"
 
 MAC = images(MAC_filename)
 MAC_fe = MAC.parseAndSlice('Fe')
-
 
 stitch = BCFstitch(MAC_directory)
 
