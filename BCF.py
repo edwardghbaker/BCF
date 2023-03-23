@@ -12,6 +12,7 @@ from tqdm import tqdm
 import PIL.Image as Image 
 from scipy.ndimage import zoom
 
+
 #%% 
 
 class util():
@@ -51,6 +52,10 @@ class images():
         self.maps = {elements[i]: maps[i] for i in range(len(elements))}
     
 class BCFstitch():
+    '''
+    need to use hyperspy rebinning function. Applies to signal class so must apply before parsing to element maps - this will be memory intensive. 
+    '''
+
 
     def __init__(self,directory,elements=['Fe','Mg','Si']):
         files = glob.glob(os.path.join(directory,'*.bcf'))
@@ -110,6 +115,10 @@ MAC_directory = r"C:\Users\User\OneDrive - The University of Manchester\meteorit
 
 MAC = images(MAC_filename)
 MAC_fe = MAC.parseAndSlice('Fe')
+
+
+
+#%%
 
 stitch = BCFstitch(MAC_directory)
 
