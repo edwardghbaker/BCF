@@ -107,19 +107,3 @@ class BCFstitch():
             blank[y:y+i.nY,x:x+i.nX] = i.data[:,:,0]
         self.composit = blank
 
-#%%
-
-MAC_filename = r'C:\Users\User\OneDrive - The University of Manchester\meteoriteData\Meteorites\MAC 88136\MAC88136_position4_001.bcf'
-MAC_filename = r"C:\Users\User\OneDrive - The University of Manchester\meteoriteData\Meteorites\MAC 88136\MAC88136_position4_001.bcf"
-MAC_directory = r"C:\Users\User\OneDrive - The University of Manchester\meteoriteData\Meteorites\MAC 88136"
-
-MAC = images(MAC_filename)
-MAC_fe = MAC.parseAndSlice('Fe')
-
-
-
-#%%
-
-stitch = BCFstitch(MAC_directory)
-
-# %%
