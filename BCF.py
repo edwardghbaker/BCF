@@ -47,7 +47,8 @@ class images():
 
     def makeMaps(self):
         elements = self.elements
-        self.maps = [plt.imshow(self.parseAndSlice(i).compute()) for i in elements]
+        maps = [plt.imshow(self.parseAndSlice(i).compute()) for i in elements]
+        self.maps = maps
         self.maps_dir = {elements[i]: maps[i] for i in range(len(elements))}
     
 class BCFstitch():
