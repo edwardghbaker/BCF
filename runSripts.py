@@ -10,7 +10,7 @@ HAL3 = r"C:\Users\User\OneDrive - The University of Manchester\SEM data\Edward B
 
 HAL3_image = images(HAL3,elements=['Fe','Mg','Si','Cl','Na'])
 #MAC_fe = MAC.parseAndSlice('Fe')
-HAL3_image.makeMaps()
+maps = HAL3_image.makeMaps()
 
 
 #%%
