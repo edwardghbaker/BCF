@@ -1,21 +1,22 @@
 #%% Imports
 
 from BCF import images, BCFstitch, util
+import matplotlib.pyplot as plt
 import glob
 
 #%% 
 
-MAC_filename = r'C:\Users\r11403eb\OneDrive - The University of Manchester\meteoriteData\Meteorites\MAC 88136\MAC88136_position4_001.bcf'
-MAC_filename = r"C:\Users\r11403eb\OneDrive - The University of Manchester\meteoriteData\Meteorites\MAC 88136\MAC88136_position4_001.bcf"
-MAC_directory = r"C:\Users\r11403eb\OneDrive - The University of Manchester\meteoriteData\Meteorites\MAC 88136"
+HAL3 = r"C:\Users\User\OneDrive - The University of Manchester\SEM data\Edward Baker\HAL3\fullsamplemap\HAL3_map.bcf"
 
-MAC = images(MAC_filename)
+HAL3_image = images(HAL3,elements=['Fe','Mg','Si','Cl','Na'])
 #MAC_fe = MAC.parseAndSlice('Fe')
-MAC.makeMaps()
+HAL3_image.makeMaps()
 
 
 #%%
-
-stitch = BCFstitch(MAC_directory)
+fig, ax = plt.subplots(1,3)
+ax[0].imshow(HAL3_image.maps['Fe'])
+ax[1].imshow(HAL3_image.maps['Mg'])
+ax[2].imshow(HAL3_image.maps['Si'])
 
 # %%

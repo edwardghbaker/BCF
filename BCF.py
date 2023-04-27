@@ -41,15 +41,14 @@ class images():
         
         self.elements = elements
         self.channels = {i: header.get_spectra_metadata().energy_to_channel(util.energyKa(i)) for i in elements}
-        breakpoint()
 
     def parseAndSlice(self,element):
         return self.data[:,:,self.channels[element]]
 
     def makeMaps(self):
         elements = self.elements
-        maps = [plt.imshow(self.parseAndSlice(i).compute()) for i in elements]
-        self.maps = {elements[i]: maps[i] for i in range(len(elements))}
+        self.maps = [plt.imshow(self.parseAndSlice(i).compute()) for i in elements]
+        self.maps_dir = {elements[i]: maps[i] for i in range(len(elements))}
     
 class BCFstitch():
     '''
