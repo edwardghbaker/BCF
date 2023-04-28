@@ -8,6 +8,7 @@ from hyperspy.io_plugins.bruker import BCF_reader, HyperHeader, bcf_images, dict
 from hyperspy.misc.elements import elements as elements_db
 import xml.etree.cElementTree as et
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from tqdm import tqdm
 import PIL.Image as Image 
 from scipy.ndimage import zoom
@@ -47,12 +48,29 @@ class images():
 
     def makeMaps(self):
         elements = self.elements
-        maps = [plt.imshow(self.parseAndSlice(i).compute()) for i in elements]      
-        self.maps = maps
-        self.maps_dir = {elements[i]: maps[i] for i in range(len(elements))}
+        maps = [self.parseAndSlice(i).compute() for i in elements]  
+        #cmap = mpl.cm.get_cmap('Pastel1')
+        for i,m in enumerate(maps):
+            
+            fig, ax = plt.subplots()
+            ax.imshow(m)
+            #plt.colorbar()
+            fig.savefig(f"Figs\\{elements[i]}.png")
+            plt.show()
+
+        #self.maps = maps
+        #self.maps_dir = {elements[i]: maps[i] for i in range(len(elements))}
         return maps
 
-    
+
+HAL3 = r"C:\Users\r11403eb\OneDrive - The University of Manchester\SEM data\Edward Baker\SAH97072_position13_001_1.bcf"
+hal4 = r"C:\Users\r11403eb\OneDrive - The University of Manchester\SEM data\Edward Baker\SAH97072_position13_001_11.bcf"
+HAL3_image = images(hal4,elements=['Fe','Mg','Si','Cl','Na','S','Ca','K','Al','Ti','P','O'])
+maps = HAL3_image.makeMaps()
+
+
+
+#%%
 class BCFstitch():
     '''
     need to use hyperspy rebinning function. Applies to signal class so must apply before parsing to element maps - this will be memory intensive. 

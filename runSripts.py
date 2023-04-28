@@ -7,9 +7,9 @@ import glob
 #%% 
 
 
-HAL3 = r"C:\Users\User\OneDrive - The University of Manchester\SEM data\Edward Baker\HAL3\fullsamplemap\HAL3_map.bcf"
+HAL3 = r"C:\Users\r11403eb\OneDrive - The University of Manchester\SEM data\Edward Baker\SAH97072_position13_001_1.bcf"
 
-HAL3_image = images(HAL3,elements=['Fe','Mg','Si','Cl','Na'])
+HAL3_image = images(HAL3,elements=['Fe'])
 maps = HAL3_image.makeMaps()
 
 
