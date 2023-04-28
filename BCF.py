@@ -23,7 +23,7 @@ class util():
 
 class images():
 
-    def __init__(self,filename, elements=['Fe','Mg','Si']):
+    def __init__(self,filename, elements=['Fe','Mg','Si'],plot=False,save=True):
         self.data = BCF_reader(filename).parse_hypermap(lazy=True)
         self.data.rechunk({0: -1, 1: -1, 2: 1})
         
@@ -43,32 +43,33 @@ class images():
         self.elements = elements
         self.channels = {i: header.get_spectra_metadata().energy_to_channel(util.energyKa(i)) for i in elements}
 
+        self.plot = plot
+        self.save = save
+        self.filename = filename
+
     def parseAndSlice(self,element):
         return self.data[:,:,self.channels[element]]
 
     def makeMaps(self):
         elements = self.elements
         maps = [self.parseAndSlice(i).compute() for i in elements]  
-        #cmap = mpl.cm.get_cmap('Pastel1')
-        for i,m in enumerate(maps):
-            
-            fig, ax = plt.subplots()
-            ax.imshow(m)
-            #plt.colorbar()
-            fig.savefig(f"Figs\\{elements[i]}.png")
-            plt.show()
 
-        #self.maps = maps
-        #self.maps_dir = {elements[i]: maps[i] for i in range(len(elements))}
+        for i,m in enumerate(maps):
+            if self.plot == True:
+                fig, ax = plt.subplots()
+                ax.imshow(m)
+                if self.save == True:
+                    os.makedirs(f"{os.path.dirname(self.filename)}\\{os.path.basename(self.filename).split('.')[0]}", exist_ok=True)
+                    fig.savefig(f"{os.path.dirname(self.filename)}\\{os.path.basename(self.filename).split('.')[0]}\\{elements[i]}.png")
+                plt.show()
+
+        self.maps = maps
+        self.maps_dir = {elements[i]: maps[i] for i in range(len(elements))}
         return maps
 
-
-HAL3 = r"C:\Users\r11403eb\OneDrive - The University of Manchester\SEM data\Edward Baker\SAH97072_position13_001_1.bcf"
-hal4 = r"C:\Users\r11403eb\OneDrive - The University of Manchester\SEM data\Edward Baker\SAH97072_position13_001_11.bcf"
-HAL3_image = images(hal4,elements=['Fe','Mg','Si','Cl','Na','S','Ca','K','Al','Ti','P','O'])
-maps = HAL3_image.makeMaps()
-
-
+img_dir = r"C:\Users\User\OneDrive - The University of Manchester\SEM data\Edward Baker\SAH97072_position13_001_11.bcf"
+img = images(img_dir,elements=['Fe','Mg','Si','Cl'],plot=True,save=True)
+maps = img.makeMaps()
 
 #%%
 class BCFstitch():
