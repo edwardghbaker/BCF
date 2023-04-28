@@ -5,13 +5,10 @@ import glob
 
 #%% 
 
-MAC_filename = r'C:\Users\r11403eb\OneDrive - The University of Manchester\meteoriteData\Meteorites\MAC 88136\MAC88136_position4_001.bcf'
-MAC_filename = r"C:\Users\r11403eb\OneDrive - The University of Manchester\meteoriteData\Meteorites\MAC 88136\MAC88136_position4_001.bcf"
-MAC_directory = r"C:\Users\r11403eb\OneDrive - The University of Manchester\meteoriteData\Meteorites\MAC 88136"
-
-MAC = images(MAC_filename)
+HAL3_filename = r"C:\Users\r11403eb\OneDrive - The University of Manchester\SEM data\Edward Baker\HAL3\fullsamplemap\HAL3_map.bcf"
+HAL3 = images(HAL3_filename,elements=['Fe','Mg','Si','Cl','Na'])
 #MAC_fe = MAC.parseAndSlice('Fe')
-MAC.makeMaps()
+HAL3.makeMaps()
 
 
 #%%

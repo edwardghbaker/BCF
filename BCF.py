@@ -50,6 +50,7 @@ class images():
         elements = self.elements
         maps = [plt.imshow(self.parseAndSlice(i).compute()) for i in elements]
         self.maps = {elements[i]: maps[i] for i in range(len(elements))}
+        return maps
     
 class BCFstitch():
     '''
