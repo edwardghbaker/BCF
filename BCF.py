@@ -53,21 +53,35 @@ class images():
     def makeMaps(self):
         elements = self.elements
         maps = [self.parseAndSlice(i).compute() for i in elements]  
-
-        for i,m in enumerate(maps):
-            if self.plot == True:
-                fig, ax = plt.subplots()
-                ax.imshow(m)
-                if self.save == True:
-                    os.makedirs(f"{os.path.dirname(self.filename)}\\{os.path.basename(self.filename).split('.')[0]}", exist_ok=True)
-                    fig.savefig(f"{os.path.dirname(self.filename)}\\{os.path.basename(self.filename).split('.')[0]}\\{elements[i]}.png")
-                plt.show()
-
         self.maps = maps
         self.maps_dir = {elements[i]: maps[i] for i in range(len(elements))}
-        return maps
 
-img_dir = r"C:\Users\User\OneDrive - The University of Manchester\SEM data\Edward Baker\SAH97072_position13_001_11.bcf"
+        if self.plot == True:
+            self.plotMaps()
+        if self.save == True:
+            self.saveMaps()
+            
+        return maps
+    
+    def saveMaps(self):
+        maps = self.maps
+        elements = self.elements
+        for i,m in enumerate(maps):
+            fig, ax = plt.subplots()
+            ax.imshow(m)
+            os.makedirs(f"{os.path.dirname(self.filename)}\\{os.path.basename(self.filename).split('.')[0]}", exist_ok=True)
+            fig.savefig(f"{os.path.dirname(self.filename)}\\{os.path.basename(self.filename).split('.')[0]}\\{elements[i]}.png")
+    
+    def plotMaps(self):
+        maps = self.maps
+        elements = self.elements
+        for i,m in enumerate(maps):
+            fig, ax = plt.subplots()
+            ax.imshow(m)
+            plt.show()
+    
+
+img_dir = r"C:\Users\r11403eb\OneDrive - The University of Manchester\SEM data\Edward Baker\SAH97072_position13_001_11.bcf"
 img = images(img_dir,elements=['Fe','Mg','Si','Cl'],plot=True,save=True)
 maps = img.makeMaps()
 
