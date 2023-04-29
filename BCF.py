@@ -23,7 +23,7 @@ class util():
 
 class images():
 
-    def __init__(self,filename, elements=['Fe','Mg','Si'],plot=False,save=True):
+    def __init__(self,filename, elements=['Fe','Mg','Si'],plot=False,save=False):
         self.data = BCF_reader(filename).parse_hypermap(lazy=True)
         self.data.rechunk({0: -1, 1: -1, 2: 1})
         
@@ -81,10 +81,6 @@ class images():
             plt.show()
     
 
-img_dir = r"C:\Users\r11403eb\OneDrive - The University of Manchester\SEM data\Edward Baker\SAH97072_position13_001_11.bcf"
-img = images(img_dir,elements=['Fe','Mg','Si','Cl'],plot=True,save=True)
-maps = img.makeMaps()
-
 #%%
 class BCFstitch():
     '''
@@ -92,28 +88,31 @@ class BCFstitch():
     '''
 
 
-    def __init__(self,directory,elements=['Fe','Mg','Si']):
+    def __init__(self,directory,elements=['Fe','Mg','Si','Cl','Na']):
         files = glob.glob(os.path.join(directory,'*.bcf'))
+        self.elements = elements
         self.files = files
         self.directory = directory
-        self.images = [images(i,elements=['Fe','Mg','Si']) for i in files]
-        #need to make a list of filenames 
+        self.maps = [images(i,elements=elements).makeMaps() for i in files]
+        print("Images loaded")
+        #print(np.shape(self.maps[0][0]))
         self.resolutions = BCFstitch.getListOfResolutions(self)
-        BCFstitch.resampleImages(self)
-        BCFstitch.makeBlankArea(self)
-        BCFstitch.addImagesToBlank(self)
+
 
     def getListOfResolutions(self):
         resolutions = [images(i).x_res for i in self.files]
         self.resolutions = resolutions
         self.max_res = min(resolutions)
+        self.scale_factors = [i/self.max_res for i in resolutions]
         return resolutions
 
     def resampleImages(self):
-        images = self.images
+        maps = self.maps
         max_res = self.max_res
-        for i in tqdm(images):
-            i.data = zoom(i.data,max_res/i.x_res,order=1)
+        for f in tqdm(len(files)):
+            print(np.shape(i.data))
+            i.data = zoom(i.data,i.x_res/max_res,order=1)
+            print(np.shape(i.data))
         self.images_same_res = images
 
     def makeBlankArea(self):
@@ -142,3 +141,16 @@ class BCFstitch():
             blank[y:y+i.nY,x:x+i.nX] = i.data[:,:,0]
         self.composit = blank
 
+#%%
+
+bcf_dir = r'C:\Users\r11403eb\OneDrive - The University of Manchester\SEM data\Edward Baker\2021.11.04'
+alh = BCFstitch(bcf_dir)
+#alh.resampleImages()
+# stuff = []
+# for i in glob.glob(os.path.join(bcf_dir,'*.bcf')):
+#     print(i)
+#     stuff.append(images(i,elements=['Fe','Mg','Si'],plot=True,save=True))
+
+
+
+# %%
