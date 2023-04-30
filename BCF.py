@@ -84,7 +84,7 @@ class images():
 #%%
 class BCFstitch():
     '''
-    need to use hyperspy rebinning function. Applies to signal class so must apply before parsing to element maps - this will be memory intensive. 
+    Applies to signal class so must apply before parsing to element maps - this will be memory intensive. 
     '''
 
 
@@ -93,9 +93,10 @@ class BCFstitch():
         self.elements = elements
         self.files = files
         self.directory = directory
-        self.maps = [images(i,elements=elements).makeMaps() for i in files]
+        self.images = [images(i,elements=elements) for i in tqdm(files)]
+        self.maps = [images(i,elements=elements).makeMaps() for i in tqdm(files)]
         print("Images loaded")
-        #print(np.shape(self.maps[0][0]))
+        #print(np.shape(self.maps[11][4]))
         self.resolutions = BCFstitch.getListOfResolutions(self)
 
 
@@ -109,21 +110,24 @@ class BCFstitch():
     def resampleImages(self):
         maps = self.maps
         max_res = self.max_res
-        for f in tqdm(len(files)):
-            print(np.shape(i.data))
-            i.data = zoom(i.data,i.x_res/max_res,order=1)
-            print(np.shape(i.data))
-        self.images_same_res = images
+        for f in tqdm(range(len(self.files))):
+            for ele in tqdm(range(len(self.elements))):
+                maps[f][ele] = zoom(maps[f][ele],self.scale_factors[f],order=1)
+            # print(np.shape(i.data))
+            # i.data = zoom(i.data,i.x_res/max_res,order=1)
+            # print(np.shape(i.data))
+        self.images_same_res = maps
 
     def makeBlankArea(self):
-        images = self.images_same_res
+        print("Making blank area")
+        images = self.images
         x = [i.x for i in images]
         y = [i.y for i in images]
         self.x_min = min(x)
         self.x_max = max(x)
         self.y_min = min(y)
         self.y_max = max(y)
-        x_range = max(x) - max(x)
+        x_range = max(x) - min(x)
         y_range = max(y) - min(y)
         x_res = images[0].x_res
         y_res = images[0].y_res
@@ -132,7 +136,7 @@ class BCFstitch():
         blank = np.zeros((nY,nX))
         self.blank = blank
 
-    def addImagesToBlank(self):
+    def addToBlank(self,ele):
         images = self.images_same_res
         blank = self.blank
         for i in tqdm(images):
@@ -143,9 +147,10 @@ class BCFstitch():
 
 #%%
 
-bcf_dir = r'C:\Users\r11403eb\OneDrive - The University of Manchester\SEM data\Edward Baker\2021.11.04'
+bcf_dir = r'C:\Users\User\OneDrive - The University of Manchester\SEM data\Edward Baker\2021.11.04'
 alh = BCFstitch(bcf_dir)
-#alh.resampleImages()
+alh.resampleImages()
+alh.makeBlankArea()
 # stuff = []
 # for i in glob.glob(os.path.join(bcf_dir,'*.bcf')):
 #     print(i)
