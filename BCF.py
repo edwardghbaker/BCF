@@ -145,7 +145,7 @@ class BCFstitch():
 
 bcf_dir = r'C:\Users\r11403eb\OneDrive - The University of Manchester\SEM data\Edward Baker\2021.11.04'
 alh = BCFstitch(bcf_dir)
-#alh.resampleImages()
+alh.resampleImages()
 # stuff = []
 # for i in glob.glob(os.path.join(bcf_dir,'*.bcf')):
 #     print(i)
