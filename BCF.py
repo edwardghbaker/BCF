@@ -4,6 +4,7 @@ import os as os
 import glob as glob
 import numpy as np
 import hyperspy.api as hs
+import pandas as pd
 from hyperspy.io_plugins.bruker import BCF_reader, HyperHeader, bcf_images, dictionarize, EDXSpectrum, bcf_hyperspectra
 from hyperspy.misc.elements import elements as elements_db
 import xml.etree.cElementTree as et
@@ -113,10 +114,7 @@ class BCFstitch():
         for f in tqdm(range(len(self.files))):
             for ele in tqdm(range(len(self.elements))):
                 maps[f][ele] = zoom(maps[f][ele],self.scale_factors[f],order=1)
-            # print(np.shape(i.data))
-            # i.data = zoom(i.data,i.x_res/max_res,order=1)
-            # print(np.shape(i.data))
-        self.images_same_res = maps
+        self.images_same_res_df = pd.DataFrame(maps,columns=self.elements)
 
     def makeBlankArea(self):
         print("Making blank area")
@@ -137,21 +135,27 @@ class BCFstitch():
         self.blank = blank
 
     def addToBlank(self,ele):
-        images = self.images_same_res
+        print('Adding to blank')
         blank = self.blank
-        for i in tqdm(images):
-            x = int((i.x - self.x_min)/i.x_res)
+        print(np.shape(blank))
+        for n,i in tqdm(enumerate(self.images)):
+            print('---------------Next Step---------------')
+            x = int((i.x - self.x_min)/i.x_res)#need to make a new nY and nX for the resampled images 
             y = int((i.y - self.y_min)/i.y_res)
-            blank[y:y+i.nY,x:x+i.nX] = i.data[:,:,0]
+            print(x,y)
+            nY_new,nX_new = np.shape(self.images_same_res_df[ele][n])
+            print(nX_new,nY_new)
+            plt.imshow(blank)#cant plot as too memory intensive, maybe try to plot as not type float64 - can you plot as int8? will need to use PIL 
+            blank[y:y+nY_new,x:x+nX_new] = alh.images_same_res_df[ele][n]
         self.composit = blank
 
 #%%
 
-bcf_dir = r'C:\Users\User\OneDrive - The University of Manchester\SEM data\Edward Baker\2021.11.04'
+bcf_dir = r'C:\Users\User\OneDrive - The University of Manchester\SEM data\2021.11.04'
 alh = BCFstitch(bcf_dir)
 alh.resampleImages()
-
 alh.makeBlankArea()
+alh.addToBlank('Fe')
 
 # stuff = []
 # for i in glob.glob(os.path.join(bcf_dir,'*.bcf')):
