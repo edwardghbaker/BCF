@@ -119,6 +119,8 @@ class BCFstitch():
         images = self.images
         x = np.array([i.x for i in images])
         y = np.array([i.y for i in images])
+        self.x = x
+        self.y = y
 
         nX_img = np.array([i.nX for i in images])
         nY_img = np.array([i.nY for i in images])
@@ -128,10 +130,17 @@ class BCFstitch():
 
         x_dist = np.array([i.x_res*i.nX for i in images])
         y_dist = np.array([i.y_res*i.nY for i in images])
+        self.x_dist = x_dist
+        self.y_dist = y_dist
 
         bottom_lefts = x,y
         top_lefts = x,y+y_dist
         bottom_rights = x+x_dist,y
+
+        self.left = self.x
+        self.right = self.x + self.x_dist
+        self.bottom = self.y
+        self.top = self.y + self.y_dist
 
         x_min = min(bottom_lefts[0])
         x_max = max(bottom_rights[0])
@@ -191,7 +200,7 @@ bcf_dir = r'ExampleData'
 alh = BCFstitch(bcf_dir)
 alh.resampleImages()
 alh.makeBlankArea(debug=True)
-alh.addToBlank('Si')
+# alh.addToBlank('Si')
 
 # stuff = []
 # for i in glob.glob(os.path.join(bcf_dir,'*.bcf')):
@@ -200,4 +209,13 @@ alh.addToBlank('Si')
 
 
 
+# %%
+
+
+fe_fig, fe_ax = plt.subplots(frameon=False)
+fe_ax.imshow(alh.maps[0][0],extent=[alh.left[0],alh.right[0],alh.bottom[0],alh.top[0]],cmap=mpl.colormaps['Greys'])                                        
+fe_ax.imshow(alh.maps[1][0],extent=[alh.left[1],alh.right[1],alh.bottom[1],alh.top[1]],cmap=mpl.colormaps['Blues'])                                        
+fe_ax.set_xlim([alh.x_min,alh.x_max])
+fe_ax.set_ylim([alh.y_min,alh.y_max])
+fe_fig.show()
 # %%
