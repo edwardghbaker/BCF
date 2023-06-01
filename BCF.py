@@ -9,7 +9,7 @@ from hyperspy.io_plugins.bruker import BCF_reader, HyperHeader, bcf_images, dict
 from hyperspy.misc.elements import elements as elements_db
 import xml.etree.cElementTree as et
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
+from matplotlib.patches import Rectangle
 import matplotlib as mpl
 from tqdm import tqdm
 import PIL.Image as Image 
@@ -158,13 +158,13 @@ class BCFstitch():
         x_res = min([i.x_res for i in images])
         y_res = min([i.y_res for i in images])
 
-        nX = int(x_range/x_res)
-        nY = int(y_range/y_res)
-        blank = np.zeros((nX,nY))
+        # nX = int(x_range/x_res)
+        # nY = int(y_range/y_res)
+        # blank = np.zeros((nX,nY))
 
-        plt.imshow(blank,cmap=mpl.colormaps['Greys'])
-        plt.show()
-        self.blank = blank
+        # plt.imshow(blank,cmap=mpl.colormaps['Greys'])
+        # plt.show()
+        # self.blank = blank
 
         if debug == True:
             plt.imshow(blank,cmap=mpl.colormaps['Greys'])
@@ -196,10 +196,10 @@ class BCFstitch():
 
 #%%
 
-bcf_dir = r'ExampleData'
+bcf_dir = r"C:\\Work\\ExampleData"
 alh = BCFstitch(bcf_dir)
 alh.resampleImages()
-alh.makeBlankArea(debug=True)
+alh.makeBlankArea(debug=False)
 # alh.addToBlank('Si')
 
 # stuff = []
@@ -211,11 +211,23 @@ alh.makeBlankArea(debug=True)
 
 # %%
 
-
-fe_fig, fe_ax = plt.subplots(frameon=False)
-fe_ax.imshow(alh.maps[0][0],extent=[alh.left[0],alh.right[0],alh.bottom[0],alh.top[0]],cmap=mpl.colormaps['Greys'])                                        
-fe_ax.imshow(alh.maps[1][0],extent=[alh.left[1],alh.right[1],alh.bottom[1],alh.top[1]],cmap=mpl.colormaps['Blues'])                                        
-fe_ax.set_xlim([alh.x_min,alh.x_max])
-fe_ax.set_ylim([alh.y_min,alh.y_max])
+def combineMaps(savePath=False):
+    elements = self.elements
+    for e in elements:
+        for i in range(len(alh.images)):
+            fe_fig, fe_ax = plt.subplots(frameon=False)
+            fe_ax.imshow(alh.maps[0][0],extent=[alh.left[0],alh.right[0],alh.bottom[0],alh.top[0]],cmap=mpl.colormaps['Greys'])                                  
+            fe_ax.set_xlim([alh.x_min,alh.x_max])
+            fe_ax.set_ylim([alh.y_min,alh.y_max])
+            fe_fig.show()
+# %%
+plt.ioff()
+fe_fig, fe_ax = plt.subplots()
+for i in range(len(alh.images[:4])):
+    fe_ax.imshow(alh.maps[i][0],extent=[alh.left[i],alh.right[i],alh.bottom[i],alh.top[i]],cmap=mpl.colormaps['Greys'],norm="linear")                                  
+    # fe_ax.set_xlim([alh.x_min,alh.x_max])
+    # fe_ax.set_ylim([alh.y_min,alh.y_max])
+    plt.gca().add_patch(Rectangle((alh.left[i],alh.bottom[i]),(alh.right[i]-alh.left[i]),(alh.top[i]-alh.bottom[i]),linewidth=1,edgecolor='r',facecolor='none'))
+fe_ax.scatter(alh.x,alh.y,color='b',s=1)
 fe_fig.show()
 # %%
