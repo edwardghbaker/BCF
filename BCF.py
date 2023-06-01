@@ -63,7 +63,7 @@ class images():
             self.saveMaps()
             
         return maps
-    
+
     def saveMaps(self):
         maps = self.maps
         elements = self.elements
@@ -72,7 +72,7 @@ class images():
             ax.imshow(m)
             os.makedirs(f"{os.path.dirname(self.filename)}\\{os.path.basename(self.filename).split('.')[0]}", exist_ok=True)
             fig.savefig(f"{os.path.dirname(self.filename)}\\{os.path.basename(self.filename).split('.')[0]}\\{elements[i]}.png")
-    
+
     def plotMaps(self):
         maps = self.maps
         elements = self.elements
@@ -80,7 +80,6 @@ class images():
             fig, ax = plt.subplots()
             ax.imshow(m)
             plt.show()
-    
 
 #%%
 class BCFstitch():
@@ -100,7 +99,6 @@ class BCFstitch():
         #print(np.shape(self.maps[11][4]))
         self.resolutions = BCFstitch.getListOfResolutions(self)
 
-
     def getListOfResolutions(self):
         resolutions = [images(i).x_res for i in self.files]
         self.resolutions = resolutions
@@ -116,6 +114,65 @@ class BCFstitch():
                 maps[f][ele] = zoom(maps[f][ele],self.scale_factors[f],order=1)
         self.images_same_res_df = pd.DataFrame(maps,columns=self.elements)
 
+<<<<<<< HEAD
+    def makeBlankArea(self,debug=False):
+
+        print("Making blank area")
+        images = self.images
+        x = np.array([i.x for i in images])
+        y = np.array([i.y for i in images])
+
+        nX_img = np.array([i.nX for i in images])
+        nY_img = np.array([i.nY for i in images])
+
+        x_res_img = np.array([i.x_res for i in images])
+        y_res_img = np.array([i.y_res for i in images])
+
+        x_dist = np.array([i.x_res*i.nX for i in images])
+        y_dist = np.array([i.y_res*i.nY for i in images])
+
+        bottom_lefts = x,y
+        top_lefts = x,y+y_dist
+        bottom_rights = x+x_dist,y
+
+        x_min = min(bottom_lefts[0])
+        x_max = max(bottom_rights[0])
+        self.x_min = x_min
+        self.x_max = x_max
+
+        y_min = min(bottom_lefts[1])
+        y_max = max(top_lefts[1])
+        self.y_min = y_min
+        self.y_max = y_max
+
+        x_range = x_max - x_min
+        y_range = y_max - y_min
+
+        x_res = min([i.x_res for i in images])
+        y_res = min([i.y_res for i in images])
+
+        nX = int(x_range/x_res)
+        nY = int(y_range/y_res)
+        blank = np.zeros((nX,nY))
+
+        plt.imshow(blank,cmap=mpl.colormaps['Greys'])
+        plt.show()
+        self.blank = blank
+
+        if debug == True:
+            plt.imshow(blank,cmap=mpl.colormaps['Greys'])
+            plt.scatter(x-min(x),y-min(y),color=['r','g','b'])
+            for left,bottom,width,height,c in zip(x,y,x_dist,y_dist,['r','g','b']):
+                print(width,height)
+                rect=mpatches.Rectangle((left-min(x),bottom-min(y)),width,height, 
+                        fill=False,
+                        color=c,
+                       linewidth=2)
+                       #facecolor="red")
+                plt.gca().add_patch(rect)
+            plt.show()
+
+=======
     def makeBlankArea(self):
         print("Making blank area")
         images = self.images
@@ -134,6 +191,7 @@ class BCFstitch():
         blank = np.zeros((nY,nX))
         self.blank = blank
 
+>>>>>>> parent of 751ecde (Changes to be committed:)
     def addToBlank(self,ele):
         print('Adding to blank')
         blank = self.blank
@@ -142,11 +200,22 @@ class BCFstitch():
             print('---------------Next Step---------------')
             x = int((i.x - self.x_min)/i.x_res)#need to make a new nY and nX for the resampled images 
             y = int((i.y - self.y_min)/i.y_res)
+<<<<<<< HEAD
+            print('X and Y Coords:',x,y)
+            nX_new,nY_new = np.shape(self.images_same_res_df[ele][n])
+            print('Pixel numbers for x and y axes:',nX_new,nY_new)
+            blank[x:x+nX_new,y:y+nY_new] = alh.images_same_res_df[ele][n]
+            plt.imshow(alh.images_same_res_df[ele][n],cmap=mpl.colormaps['Greys'])
+            plt.show()
+            plt.imshow(blank,cmap=mpl.colormaps['Greys'])
+            plt.show()
+=======
             print(x,y)
             nY_new,nX_new = np.shape(self.images_same_res_df[ele][n])
             print(nX_new,nY_new)
             plt.imshow(blank)#cant plot as too memory intensive, maybe try to plot as not type float64 - can you plot as int8? will need to use PIL 
             blank[y:y+nY_new,x:x+nX_new] = alh.images_same_res_df[ele][n]
+>>>>>>> parent of 751ecde (Changes to be committed:)
         self.composit = blank
 
 #%%
@@ -154,8 +223,13 @@ class BCFstitch():
 bcf_dir = r'C:\Users\User\OneDrive - The University of Manchester\SEM data\2021.11.04'
 alh = BCFstitch(bcf_dir)
 alh.resampleImages()
+<<<<<<< HEAD
+alh.makeBlankArea(debug=True)
+alh.addToBlank('Si')
+=======
 alh.makeBlankArea()
 alh.addToBlank('Fe')
+>>>>>>> parent of 751ecde (Changes to be committed:)
 
 # stuff = []
 # for i in glob.glob(os.path.join(bcf_dir,'*.bcf')):
