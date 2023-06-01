@@ -114,7 +114,6 @@ class BCFstitch():
                 maps[f][ele] = zoom(maps[f][ele],self.scale_factors[f],order=1)
         self.images_same_res_df = pd.DataFrame(maps,columns=self.elements)
 
-<<<<<<< HEAD
     def makeBlankArea(self,debug=False):
 
         print("Making blank area")
@@ -172,26 +171,6 @@ class BCFstitch():
                 plt.gca().add_patch(rect)
             plt.show()
 
-=======
-    def makeBlankArea(self):
-        print("Making blank area")
-        images = self.images
-        x = [i.x for i in images]
-        y = [i.y for i in images]
-        self.x_min = min(x)
-        self.x_max = max(x)
-        self.y_min = min(y)
-        self.y_max = max(y)
-        x_range = max(x) - min(x)
-        y_range = max(y) - min(y)
-        x_res = images[0].x_res
-        y_res = images[0].y_res
-        nX = int(x_range/x_res)
-        nY = int(y_range/y_res)
-        blank = np.zeros((nY,nX))
-        self.blank = blank
-
->>>>>>> parent of 751ecde (Changes to be committed:)
     def addToBlank(self,ele):
         print('Adding to blank')
         blank = self.blank
@@ -200,7 +179,6 @@ class BCFstitch():
             print('---------------Next Step---------------')
             x = int((i.x - self.x_min)/i.x_res)#need to make a new nY and nX for the resampled images 
             y = int((i.y - self.y_min)/i.y_res)
-<<<<<<< HEAD
             print('X and Y Coords:',x,y)
             nX_new,nY_new = np.shape(self.images_same_res_df[ele][n])
             print('Pixel numbers for x and y axes:',nX_new,nY_new)
@@ -209,13 +187,6 @@ class BCFstitch():
             plt.show()
             plt.imshow(blank,cmap=mpl.colormaps['Greys'])
             plt.show()
-=======
-            print(x,y)
-            nY_new,nX_new = np.shape(self.images_same_res_df[ele][n])
-            print(nX_new,nY_new)
-            plt.imshow(blank)#cant plot as too memory intensive, maybe try to plot as not type float64 - can you plot as int8? will need to use PIL 
-            blank[y:y+nY_new,x:x+nX_new] = alh.images_same_res_df[ele][n]
->>>>>>> parent of 751ecde (Changes to be committed:)
         self.composit = blank
 
 #%%
@@ -223,13 +194,8 @@ class BCFstitch():
 bcf_dir = r'C:\Users\User\OneDrive - The University of Manchester\SEM data\2021.11.04'
 alh = BCFstitch(bcf_dir)
 alh.resampleImages()
-<<<<<<< HEAD
 alh.makeBlankArea(debug=True)
 alh.addToBlank('Si')
-=======
-alh.makeBlankArea()
-alh.addToBlank('Fe')
->>>>>>> parent of 751ecde (Changes to be committed:)
 
 # stuff = []
 # for i in glob.glob(os.path.join(bcf_dir,'*.bcf')):
