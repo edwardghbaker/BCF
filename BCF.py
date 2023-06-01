@@ -195,8 +195,8 @@ class BCFstitch():
         self.composit = blank
 
 #%%
-
-bcf_dir = r"C:\\Work\\ExampleData"
+bcf_dir=r"C:\Users\User\OneDrive - The University of Manchester\SEM data\2021.11.04"
+#bcf_dir = r"C:\\Work\\ExampleData"
 alh = BCFstitch(bcf_dir)
 alh.resampleImages()
 alh.makeBlankArea(debug=False)
@@ -221,13 +221,12 @@ def combineMaps(savePath=False):
             fe_ax.set_ylim([alh.y_min,alh.y_max])
             fe_fig.show()
 # %%
-plt.ioff()
-fe_fig, fe_ax = plt.subplots()
+fe_fig, fe_ax = plt.subplots(figsize=(10,10),frameon=False)
 for i in range(len(alh.images[:4])):
     fe_ax.imshow(alh.maps[i][0],extent=[alh.left[i],alh.right[i],alh.bottom[i],alh.top[i]],cmap=mpl.colormaps['Greys'],norm="linear")                                  
-    # fe_ax.set_xlim([alh.x_min,alh.x_max])
-    # fe_ax.set_ylim([alh.y_min,alh.y_max])
+    fe_ax.set_xlim([alh.x_min,alh.x_max])
+    fe_ax.set_ylim([alh.y_min,alh.y_max])
     plt.gca().add_patch(Rectangle((alh.left[i],alh.bottom[i]),(alh.right[i]-alh.left[i]),(alh.top[i]-alh.bottom[i]),linewidth=1,edgecolor='r',facecolor='none'))
 fe_ax.scatter(alh.x,alh.y,color='b',s=1)
-fe_fig.show()
+fe_fig.savefig(r'C:\Users\User\Desktop\test.png',dpi=1800)
 # %%
