@@ -9,6 +9,7 @@ from hyperspy.io_plugins.bruker import BCF_reader, HyperHeader, bcf_images, dict
 from hyperspy.misc.elements import elements as elements_db
 import xml.etree.cElementTree as et
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import matplotlib as mpl
 from tqdm import tqdm
 import PIL.Image as Image 
@@ -96,7 +97,6 @@ class BCFstitch():
         self.images = [images(i,elements=elements) for i in tqdm(files)]
         self.maps = [images(i,elements=elements).makeMaps() for i in tqdm(files)]
         print("Images loaded")
-        #print(np.shape(self.maps[11][4]))
         self.resolutions = BCFstitch.getListOfResolutions(self)
 
     def getListOfResolutions(self):
@@ -108,7 +108,6 @@ class BCFstitch():
 
     def resampleImages(self):
         maps = self.maps
-        max_res = self.max_res
         for f in tqdm(range(len(self.files))):
             for ele in tqdm(range(len(self.elements))):
                 maps[f][ele] = zoom(maps[f][ele],self.scale_factors[f],order=1)
@@ -160,14 +159,11 @@ class BCFstitch():
 
         if debug == True:
             plt.imshow(blank,cmap=mpl.colormaps['Greys'])
-            plt.scatter(x-min(x),y-min(y),color=['r','g','b'])
-            for left,bottom,width,height,c in zip(x,y,x_dist,y_dist,['r','g','b']):
+            plt.show()
+            plt.scatter(x-min(x),y-min(y),color=['r','g'])
+            for left,bottom,width,height,c in zip(x,y,x_dist,y_dist,['r','g']):
                 print(width,height)
-                rect=mpatches.Rectangle((left-min(x),bottom-min(y)),width,height, 
-                        fill=False,
-                        color=c,
-                       linewidth=2)
-                       #facecolor="red")
+                rect=mpatches.Rectangle((left-min(x),bottom-min(y)),width,height,fill=False,color=c,linewidth=2)
                 plt.gca().add_patch(rect)
             plt.show()
 
@@ -191,7 +187,7 @@ class BCFstitch():
 
 #%%
 
-bcf_dir = r'C:\Users\User\OneDrive - The University of Manchester\SEM data\2021.11.04'
+bcf_dir = r'ExampleData'
 alh = BCFstitch(bcf_dir)
 alh.resampleImages()
 alh.makeBlankArea(debug=True)
