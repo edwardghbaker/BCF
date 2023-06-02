@@ -172,7 +172,7 @@ class BCFstitch():
             plt.scatter(x-min(x),y-min(y),color=['r','g'])
             for left,bottom,width,height,c in zip(x,y,x_dist,y_dist,['r','g']):
                 print(width,height)
-                rect=mpatches.Rectangle((left-min(x),bottom-min(y)),width,height,fill=False,color=c,linewidth=2)
+                rect=Rectangle((left-min(x),bottom-min(y)),width,height,fill=False,color=c,linewidth=2)
                 plt.gca().add_patch(rect)
             plt.show()
 
@@ -211,7 +211,7 @@ alh.makeBlankArea(debug=False)
 
 # %%
 
-def combineMaps(savePath=False):
+def combineMaps(self,savePath=False):
     elements = self.elements
     for e in elements:
         for i in range(len(alh.images)):
